@@ -1,0 +1,104 @@
+●リスト3-32 微妙に異なる二つのテーブル
+CREATE TABLE Tbl_A
+(keycol   CHAR(1) NOT NULL,
+ c1 INTEGER,
+ c2 INTEGER,
+ c3 INTEGER,
+   CONSTRAINT pk_Tbl_A PRIMARY KEY (keycol));
+
+CREATE TABLE Tbl_B
+(keycol   CHAR(1) NOT NULL,
+ c1 INTEGER,
+ c2 INTEGER,
+ c3 INTEGER,
+   CONSTRAINT pk_Tbl_B PRIMARY KEY (keycol));
+
+
+INSERT INTO Tbl_A VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_A VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_A VALUES('C', 7, 8, 9);
+
+INSERT INTO Tbl_B VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_B VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_B VALUES('C', 7, 8, 0);
+
+
+●リスト3-33 UNIONによるレコードの集約
+SELECT * FROM Tbl_A
+UNION
+SELECT * FROM Tbl_B;
+
+●リスト3-34 NULLを含む場合のテストデータ
+INSERT INTO Tbl_A VALUES('A', 1, 2, NULL);
+INSERT INTO Tbl_A VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_A VALUES('C', 7, 8, 9);
+
+INSERT INTO Tbl_B VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_B VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_B VALUES('C', 7, 8, 9);
+
+
+●リスト3-35 UNIONによるテーブルの相等性チェック
+SELECT keycol, COUNT(*)
+  FROM (SELECT * FROM Tbl_A
+        UNION
+        SELECT * FROM Tbl_B)
+ GROUP BY keycol
+HAVING COUNT(*) >= 2;
+
+
+●keyが異なる二つのテーブル
+CREATE TABLE Tbl_A_key
+(keycol   CHAR(1) NOT NULL,
+ c1 INTEGER,
+ c2 INTEGER,
+ c3 INTEGER,
+   CONSTRAINT pk_Tbl_A_key PRIMARY KEY (keycol));
+
+CREATE TABLE Tbl_B_key
+(keycol   CHAR(1) NOT NULL,
+ c1 INTEGER,
+ c2 INTEGER,
+ c3 INTEGER,
+   CONSTRAINT pk_Tbl_B_key PRIMARY KEY (keycol));
+
+●keyが異なる場合のデータ
+INSERT INTO Tbl_A_key VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_A_key VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_A_key VALUES('C', 7, 8, 9);
+
+INSERT INTO Tbl_B_key VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_B_key VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_B_key VALUES('D', 7, 8, 9);
+
+●リスト3-36 keyが異なる場合
+(SELECT * FROM tbl_A_key
+EXCEPT
+SELECT * FROM tbl_B_key)
+UNION ALL
+(SELECT * FROM tbl_B_key
+EXCEPT
+SELECT * FROM tbl_A_key);
+
+●テーブルにNULLを含む場合
+INSERT INTO Tbl_A VALUES('A', 1, 2, NULL);
+INSERT INTO Tbl_A VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_A VALUES('C', 7, 8, 9);
+
+INSERT INTO Tbl_B VALUES('A', 1, 2, 3);
+INSERT INTO Tbl_B VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_B VALUES('C', 7, 8, 9);
+
+●両方のテーブルにNULLを含む場合
+INSERT INTO Tbl_A VALUES('A', 1, 2, NULL);
+INSERT INTO Tbl_A VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_A VALUES('C', 7, 8, 9);
+
+INSERT INTO Tbl_B VALUES('A', 1, 2, NULL);
+INSERT INTO Tbl_B VALUES('B', 4, 5, 6);
+INSERT INTO Tbl_B VALUES('C', 7, 8, 9);
+
+●リスト3-37 INTERSECTによるレコードの集約
+SELECT * FROM Tbl_A
+INTERSECT
+SELECT * FROM Tbl_B;
